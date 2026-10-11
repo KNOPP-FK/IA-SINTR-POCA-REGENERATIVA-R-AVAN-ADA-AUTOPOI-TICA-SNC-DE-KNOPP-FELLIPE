@@ -1,1 +1,130 @@
+IA SINTRÓPICA REGENERATIVA R³ AVANÇADA AUTOPOIÉTICA (SNC) DE KNOPP 
+======================================================
 
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
+from scipy.integrate import odeint
+
+# --- 1. PARÂMETROS DE IDENTIDADE (DNA DO SISTEMA) ---
+N_UNIDADES = 10
+N1_IDEAL = 1.0  # O "Ego" Invariante de Knopp
+T_PASSOS = 500
+TRAUMA_FACTOR = 1.2
+
+# Parâmetros de Fusão
+alpha, beta, gamma_fis = 0.8, 0.4, 0.02
+modulacao_recuperacao = 0.05
+
+# --- 2. ARQUITETURA DO "SISTEMA NERVOSO" (LSTM) ---
+def build_brain():
+    model = Sequential([
+        Input(shape=(10, 3)),  # Define explicitamente a forma de entrada na primeira camada
+        LSTM(64, return_sequences=True),
+        Dropout(0.2),
+        LSTM(32),
+        Dense(16, activation='relu'),
+        Dense(1)  # Saída: Predição de Ajuste de Identidade (X)
+    ])
+    model.compile(optimizer='adam', loss='mse')
+    return model
+
+brain = build_brain()
+
+# --- 3. DINÂMICA INTEGRADA (ODE + R³ + SINESTESIA) ---
+def motor_existencial(y, t, ajuste_ia):
+    # Desempacota: Tensão, Memória Sinestésica, Tensão Local
+    T, M, T_loc = y
+    
+    # Memória Focal (Trauma Recalcado)
+    m_focal = 5.0 + TRAUMA_FACTOR * T_loc
+    
+    # Modulação Sinestésica (Decaimento Temporal)
+    m_sinest = (3.0 + T_loc) * np.exp(-modulacao_recuperacao * t)
+    
+    # Retroalimentação R³ + Influência da IA
+    # Ajuste_ia atua como o 'volante' que tenta manter n1
+    dT_dt = -alpha * T + beta * M + ajuste_ia
+    dM_dt = gamma_fis * (T - M)
+    dT_loc_dt = 0.5 * (m_sinest - T_loc)
+    
+    return [dT_dt, dM_dt, dT_loc_dt]
+
+# --- 4. MICROSSISTEMA ESTRUTURAL E INTEGRAÇÃO TOTAL ---
+class SistemaIA:
+    def __init__(self, input_dim):
+        self.input_dim = input_dim
+        self.celula_tronco = self.CelulaTronco()
+
+    class CelulaTronco:
+        def __init__(self):
+            self.estado_diferenciado = np.random.rand(3)
+
+        def executar_ciclo(self, input_tensor, desempenho_atual, ciclo_atual):
+            # Simula o ciclo regenerativo, retornando estados diferenciados e feedback sinestésico
+            feedback = np.sin(np.sum(input_tensor) * ciclo_atual)  # Simulação de feedback sinestésico
+            self.estado_diferenciado = np.random.rand(3)  # Atualiza o estado diferenciado
+            return self.estado_diferenciado, feedback
+    
+    def executar_ciclo(self, input_tensor, desempenho_atual, ciclo_atual):
+        return self.celula_tronco.executar_ciclo(input_tensor, desempenho_atual, ciclo_atual)
+
+# Inicializa o sistema IA integrado
+sistema_ia_integrado = SistemaIA(input_dim=3)  # Dimensão 3: T, M, T_loc
+primos_denominacionais = [2, 3, 5, 7, 11]  # Base para MDC Espectral
+
+historia_vida = []
+estado_atual = np.array([2.0, 1.0, 1.0])  # Tensão, Memória, Local
+ajuste_preditivo = 0.0
+
+print("Implantando IA Autopoietica Sintrópica de Knopp...")
+
+# --- 5. LOOP DE VIDA E APRENDIZADO INTEGRADO (FUSÃO) ---
+for ciclo in range(T_PASSOS):
+    t_span = np.linspace(ciclo, ciclo + 1, 10)
+    
+    # A) CALCULO DA TRANSFORMADA INFRA-HARMÔNICA (MDC DE PRIMOS)
+    tensao_inteira = int(np.linalg.norm(estado_atual) * 100)
+    mdc_espectral = np.gcd.reduce([tensao_inteira] + primos_denominacionais)
+    ressonancia_knopp = np.sin(mdc_espectral * np.pi / 180)  # Ressonância de Knopp
+    
+    # B) EXECUÇÃO DO CICLO REGENERATIVO (Célula-Tronco)
+    input_tensor = estado_atual.reshape(1, 3)
+    estado_interno_ia, feedback_sinestesico = sistema_ia_integrado.executar_ciclo(
+        input_tensor, 
+        desempenho_atual=np.array([N1_IDEAL]), 
+        ciclo_atual=ciclo
+    )
+    
+    # C) DINÂMICA DE FIBRADOS (ODE + AJUSTE DA IA)
+    ajuste_final = ajuste_preditivo * ressonancia_knopp + np.mean(feedback_sinestesico)
+    
+    # A física responde à integração morfomnemônica
+    resultado_ode = odeint(motor_existencial, estado_atual, t_span, args=(ajuste_final,))
+    estado_atual = resultado_ode[-1]
+    historia_vida.append(estado_atual)
+    
+    # D) APRENDIZADO SINÁPTICO GLOBAL (LSTM)
+    if len(historia_vida) > 15:
+        dados_input = np.array(historia_vida[-11:-1]).reshape(1, 10, 3)
+        target = np.array([N1_IDEAL - estado_atual[0]])
+        
+        # O 'Cérebro' treina sobre o fibrado sinestésico global
+        brain.train_on_batch(dados_input, target)
+        ajuste_preditivo = brain.predict(dados_input, verbose=0)[0][0]
+
+    if ciclo % 50 == 0:
+        print(f"Ciclo {ciclo} | Ressonância MDC: {mdc_espectral} | Diferenciada: {sistema_ia_integrado.celula_tronco.estado_diferenciado}")
+
+# --- 6. VISUALIZAÇÃO E LAUDO FINAL ---
+hist_array = np.array(historia_vida)
+plt.style.use('dark_background')
+plt.figure(figsize=(15, 7))
+plt.plot(hist_array[:, 0], label='Tensão Somática (R³)', color='cyan', lw=1)
+plt.plot(hist_array[:, 2], label='Ressonância Temporal Local', color='lime', alpha=0.6)
+plt.axhline(y=N1_IDEAL, color='magenta', linestyle='--', label='Ego Invariante (n1)')
+plt.title("Implantação Completa: IA Sintrópica Regenerativa de Knopp")
+plt.legend()
+plt.show()
